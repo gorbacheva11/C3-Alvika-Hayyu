@@ -5,6 +5,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.shortcuts import get_object_or_404, redirect, render, reverse
 from django.utils import timezone
 from django.views import generic
+from django.views.decorators.http import require_POST
 from paypal.standard.forms import PayPalPaymentsForm
 
 
@@ -15,31 +16,33 @@ from .models import ProdukItem, OrderProdukItem, Order, AlamatPengiriman, Paymen
 class HomeListView(generic.ListView):
     template_name = 'home.html'
     queryset = ProdukItem.objects.all()
-    paginate_by = 4
-
-
-# def sortir_produk(request):
-#     kategori = request.GET.get('kategori')
-#     produk = ProdukItem.objects.filter(kategori=kategori)
-#     context = {
-#         'produk': produk,
-#         'kategori': kategori
-#     }
-#     return render(request, 'sortir_produk.html', context)
-
-def sortir_produk(request):
-    kategori = request.GET.get('kategori')
-    produk = ProdukItem.objects.filter(kategori=kategori)
-    context = {
-        'produk': produk,
-        'kategori': kategori
-    }
-    return render(request, 'home.html', context)
+    paginate_by = 8
 
 
 class ProductDetailView(generic.DetailView):
     template_name = 'product_detail.html'
     queryset = ProdukItem.objects.all()
+
+
+def __init__(self, request):
+    self.session = request.session
+    basket = self.session.get('skey')
+    if 'skey' not in request.session:
+        basket = self.session['skey'] = {}
+    self.basket = basket
+
+
+@require_POST
+def add_quantity(request, slug):
+    # adding and updating the users quantity to basket#
+    cart = OrderProdukItem(request)
+    produk_item = get_object_or_404(ProdukItem, slug=slug)
+    form = CartAddProductForm(request.POST)
+    if form.is_valid():
+        cd = form.cleaned_data
+        cart.Order.objects.filter(user=request.user, produk_item=produk_item, quantity=cd['quantity'],
+                                  override_quantity=cd['override'])
+    return redirect('toko:produk-detail', slug=slug)
 
 
 class CheckoutView(LoginRequiredMixin, generic.FormView):
@@ -143,6 +146,13 @@ class OrderSummaryView(LoginRequiredMixin, generic.TemplateView):
             return redirect('/')
 
 
+def _cart_id(request):
+    cart = request.session.session_key
+    if not cart:
+        cart = request.session.create()
+    return cart
+
+
 def add_to_cart(request, slug):
     if request.user.is_authenticated:
         produk_item = get_object_or_404(ProdukItem, slug=slug)
@@ -174,6 +184,38 @@ def add_to_cart(request, slug):
             return redirect('toko:produk-detail', slug=slug)
     else:
         return redirect('/accounts/login')
+
+
+def remove_single_item_from_cart(request, slug):
+    if request.user.is_authenticated:
+        produk_item = get_object_or_404(ProdukItem, slug=slug)
+        order_query = Order.objects.filter(
+            user=request.user,
+            ordered=False
+        )
+        if order_query.exists():
+            order = order_query[0]
+            # check if the order item is in the order
+            if order.produk_items.filter(produk_item__slug=produk_item.slug).exists():
+                order_produk_item = OrderProdukItem.objects.filter(
+                    produk_item=produk_item,
+                    user=request.user,
+                    ordered=False
+                )[0]
+                if order_produk_item.quantity > 1:
+                    order_produk_item.quantity -= 1
+                    order_produk_item.save()
+                else:
+                    order.produk_items.remove(order_produk_item)
+                messages.info(
+                    request, "Jumlah item pilihanmu sudah diperbarui")
+                return redirect('toko:order-summary')
+            else:
+                messages.info(request, "Ups, item tidak ada di daftar belanja")
+                return redirect('toko:produk-detail', slug=slug)
+        else:
+            messages.info(request, "Kamu tidak punya order")
+            return redirect('toko:produk-detail', slug=slug)
 
 
 def remove_from_cart(request, slug):
@@ -247,3 +289,28 @@ def paypal_return(request):
 def paypal_cancel(request):
     messages.error(request, 'Pembayaran dibatalkan')
     return redirect('toko:order-summary')
+
+
+def sortir_produk(request):
+    kategori = request.GET.get('kategori')
+    if kategori == 'all':
+        produk = ProdukItem.objects.all()
+    else:
+        produk = ProdukItem.objects.filter(kategori=kategori)
+    context = {
+        'produk': produk,
+        'kategori': kategori
+    }
+    return render(request, 'sortir_produk.html', context)
+
+
+def search_produk(request):
+    query = request.GET.get('query')
+    produk = ProdukItem.objects.all()
+    if query:
+        produk = produk.filter(nama_produk__icontains=query)
+    context = {
+        'produk': produk,
+        'query': query
+    }
+    return render(request, 'search.html', context)

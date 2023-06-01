@@ -51,8 +51,29 @@
           <strong><p style="font-size: 15px">Stok: {{ object.stock}}</p></strong>
 
           {% if object.stock <= 0 %}
-          <h5 class="text-danger">Out of Stock</h5>
+          <label class="badge bg-danger">Out of Stock</label>
           {% else %}
+          <label class="badge bg-success">In Stock</label>
+
+          <div class="col">
+            <div class="row p-3">
+              <div class="col-6">
+                <label for="select"><strong>Quantity :</strong></label>
+                <select id="select{{user.id}}">
+                  {% if object.stock == 1 %}
+                  <option value="1">1 item left</option>
+                  {% else %}
+                  <option value="1">1</option>
+                  <option value="2">2</option>
+                  <option value="3">3</option>
+                  <option value="4">4</option>
+                  <option value="5">5</option>
+                  {% endif %}
+                </select>
+              </div>
+            </div>
+          </div>
+
           <a href="{{ object.get_add_to_cart_url }}" class="btn btn-primary ms-1">
             Tambah ke keranjang
             <i class="fas fa-shopping-cart ms-1"></i>

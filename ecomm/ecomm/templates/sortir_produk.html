@@ -21,7 +21,7 @@
           <ul class="navbar-nav me-auto mb-2 mb-lg-0">
             <!-- Link -->
             <li class="nav-item acitve">
-              <a class="nav-link text-white" href="/">All</a>
+              <a class="nav-link text-white" href="{% url 'toko:sortir_produk' %}?kategori=all">All</a>
             </li>
             <li class="nav-item">
               <a class="nav-link text-white" href="{% url 'toko:sortir_produk' %}?kategori=S">Shirts</a>
@@ -41,8 +41,9 @@
           </ul>
 
           <!-- Search -->
-          <form class="w-auto py-1" style="max-width: 12rem">
-            <input type="search" class="form-control rounded-0" placeholder="Search" aria-label="Search" />
+          <form method="GET" class="w-auto py-1" style="max-width: 12rem" action="{% url 'toko:search' %}">
+            <input type="text" name="query" class="form-control rounded-0" placeholder="Search" aria-label="Search" />
+            <input type="submit" value="Search" style="display: none" />
           </form>
         </div>
       </div>
@@ -54,7 +55,7 @@
     <section>
       <div class="text-center">
         <div class="row">
-          {% for pItem in produk %} {% if pItem.kategori == kategori %}
+          {% for pItem in produk %} {% if pItem.kategori == kategori or kategori == 'all' %}
           <div class="col-lg-3 col-md-6 mb-4">
             <div class="card">
               <div class="bg-image hover-zoom ripple ripple-surface ripple-surface-light" data-mdb-ripple-color="light">

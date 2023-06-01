@@ -4,6 +4,7 @@ from django.db import models
 from django.urls import reverse
 
 PILIHAN_KATEGORI = (
+    ('all', 'all'),
     ('S', 'Shirt'),
     ('SW', 'Sport wear'),
     ('OW', 'Outwear'),
@@ -33,7 +34,7 @@ class ProdukItem(models.Model):
     deskripsi = models.TextField()
     gambar = models.ImageField(upload_to='product_pics')
     label = models.CharField(choices=PILIHAN_LABEL, max_length=4)
-    kategori = models.CharField(choices=PILIHAN_KATEGORI, max_length=2)
+    kategori = models.CharField(choices=PILIHAN_KATEGORI, max_length=3)
     stock = models.FloatField(blank=True, null=True)
     is_available = models.BooleanField(default=False)
 
@@ -50,8 +51,16 @@ class ProdukItem(models.Model):
             "slug": self.slug
         })
 
+    def get_add_quantity_url(self):
+        return reverse("toko:add-quantity", kwargs={"slug": self.slug})
+
     def get_remove_from_cart_url(self):
         return reverse("toko:remove-from-cart", kwargs={
+            "slug": self.slug
+        })
+
+    def get_remove_single_item_from_cart_url(self):
+        return reverse("toko:remove-single-item-from-cart", kwargs={
             "slug": self.slug
         })
 

@@ -53,9 +53,10 @@
 
     <!-- Products -->
     <section>
+      <h5>Hasil Pencarian untuk "{{ query }}"</h5>
       <div class="text-center">
         <div class="row">
-          {% for pItem in object_list %}
+          {% for pItem in produk %}
           <div class="col-lg-3 col-md-6 mb-4">
             <div class="card">
               <div class="bg-image hover-zoom ripple ripple-surface ripple-surface-light" data-mdb-ripple-color="light">
@@ -79,42 +80,45 @@
                   <p>{{ pItem.get_kategori_display }}</p>
                 </a>
                 <h6 class="mb-3 price">${% if pItem.harga_diskon %}{{ pItem.harga_diskon }}{% else %}{{ pItem.harga }}{% endif %}</h6>
-                <a href="{{ pItem.get_absolute_url}}" class="btn btn-block btn-primary">View Product</a>
+                <a href="{{ pItem.get_absolute_url }}" class="btn btn-block btn-primary">View Product</a>
               </div>
             </div>
           </div>
           {% empty %}
-          <p>Data Produk belum tersedia</p>
+          <p>Tidak ditemukan produk yang sesuai dengan pencarian Anda</p>
           {% endfor %}
         </div>
       </div>
     </section>
-    <!-- End Products -->
-
-    <!-- Pagination -->
-    {% if is_paginated %}
-    <nav aria-label="Page navigation example" class="d-flex justify-content-center mt-3">
-      <ul class="pagination">
-        <li class="page-item">
-          {% if page_obj.has_previous %}
-          <a class="page-link" href="{{ request.path }}?page={{ page_obj.previous_page_number }}" aria-label="Previous">
-            <span aria-hidden="true">&laquo;</span>
-          </a>
-          {% endif %}
-        </li>
-        <li class="page-item active"><a class="page-link" href="#">{{ page_obj.number }}</a></li>
-        <li class="page-item">
-          {% if page_obj.has_next %}
-          <a class="page-link" href="{{ request.path }}?page={{ page_obj.next_page_number }}" aria-label="Next">
-            <span aria-hidden="true">&raquo;</span>
-          </a>
-          {% endif %}
-        </li>
-      </ul>
-    </nav>
-    {% endif %}
-    <!-- Pagination -->
+    {% endblock %}
   </div>
 </main>
+<!--End Products-->
+
+<!-- Pagination -->
+{% if is_paginated %}
+<nav aria-label="Page navigation example" class="d-flex justify-content-center mt-3">
+  <ul class="pagination">
+    <li class="page-item">
+      {% if page_obj.has_previous %}
+      <a class="page-link" href="{{ request.path }}?page={{ page_obj.previous_page_number }}" aria-label="Previous">
+        <span aria-hidden="true">&laquo;</span>
+      </a>
+      {% endif %}
+    </li>
+    <li class="page-item active"><a class="page-link" href="#">{{ page_obj.number }}</a></li>
+    <li class="page-item">
+      {% if page_obj.has_next %}
+      <a class="page-link" href="{{ request.path }}?page={{ page_obj.next_page_number }}" aria-label="Next">
+        <span aria-hidden="true">&raquo;</span>
+      </a>
+      {% endif %}
+    </li>
+  </ul>
+</nav>
+{% endif %}
+<!-- Pagination -->
+</div>
+</main>
 <!--Main layout-->
-{% endblock content %}
+
