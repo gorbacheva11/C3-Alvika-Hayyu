@@ -322,3 +322,30 @@ def search_produk(request):
     }
     return render(request, 'search.html', context)
 
+
+def contact(request):
+    if request.method == 'POST':
+        form = ContactForm(request.POST)
+        if form.is_valid():
+            nama = form.cleaned_data['nama']
+            email = form.cleaned_data['email']
+            pesan = form.cleaned_data['pesan']
+
+            # Mengirim email ke perusahaan
+            send_mail(
+                'Pesan dari Customer E-commerce Django',
+                f'Nama: {nama}\nEmail: {email}\nPesan: {pesan}',
+                email,
+                ['witc3sore@gmail.com'],
+                fail_silently=False,
+            )
+
+            # Ganti dengan URL halaman sukses pengiriman pesan
+            messages.info(
+                request, "Pesan kamu sudah kami terima, thank you for contacting us!")
+            return redirect('toko:contact')
+    else:
+        form = ContactForm()
+
+    return render(request, 'contact.html', {'form': form})
+
