@@ -1,5 +1,6 @@
 from django.conf import settings
 from django.contrib import messages
+from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.exceptions import ObjectDoesNotExist
 from django.shortcuts import get_object_or_404, redirect, render, reverse
@@ -7,10 +8,9 @@ from django.utils import timezone
 from django.views import generic
 from django.views.decorators.http import require_POST
 from paypal.standard.forms import PayPalPaymentsForm
-
-
 from .forms import CheckoutForm
 from .models import ProdukItem, OrderProdukItem, Order, AlamatPengiriman, Payment
+from django.views.decorators.csrf import csrf_protect, csrf_exempt
 
 
 class HomeListView(generic.ListView):
@@ -153,6 +153,7 @@ def _cart_id(request):
     return cart
 
 
+@login_required
 def add_to_cart(request, slug):
     if request.user.is_authenticated:
         produk_item = get_object_or_404(ProdukItem, slug=slug)
@@ -164,16 +165,21 @@ def add_to_cart(request, slug):
         order_query = Order.objects.filter(user=request.user, ordered=False)
         if order_query.exists():
             order = order_query[0]
+            #stock = request.GET.get('stock')
             if order.produk_items.filter(produk_item__slug=produk_item.slug).exists():
-                order_produk_item.quantity += 1
-                order_produk_item.save()
-                pesan = f"ProdukItem sudah diupdate menjadi: { order_produk_item.quantity }"
-                messages.info(request, pesan)
-                return redirect('toko:produk-detail', slug=slug)
+                if produk_item.stock <= order_produk_item.quantity:
+                    order_produk_item.save()
+                    messages.error(request, 'Produk hanya tersisa 1')
+                    return redirect('toko:produk-detail', slug=slug)
+                else:
+                    order_produk_item.quantity += 1
+                    order_produk_item.save()
+                    pesan = f"ProdukItem sudah diupdate menjadi: {order_produk_item.quantity}"
+                    messages.info(request, pesan)
+                    return redirect('toko:order-summary')
             else:
                 order.produk_items.add(order_produk_item)
-                messages.info(
-                    request, 'ProdukItem pilihanmu sudah ditambahkan')
+                messages.info(request, 'ProdukItem pilihanmu sudah ditambahkan')
                 return redirect('toko:produk-detail', slug=slug)
         else:
             tanggal_order = timezone.now()
@@ -218,6 +224,7 @@ def remove_single_item_from_cart(request, slug):
             return redirect('toko:produk-detail', slug=slug)
 
 
+@login_required()
 def remove_from_cart(request, slug):
     if request.user.is_authenticated:
         produk_item = get_object_or_404(ProdukItem, slug=slug)
@@ -314,3 +321,4 @@ def search_produk(request):
         'query': query
     }
     return render(request, 'search.html', context)
+

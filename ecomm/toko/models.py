@@ -35,7 +35,7 @@ class ProdukItem(models.Model):
     gambar = models.ImageField(upload_to='product_pics')
     label = models.CharField(choices=PILIHAN_LABEL, max_length=4)
     kategori = models.CharField(choices=PILIHAN_KATEGORI, max_length=3)
-    stock = models.FloatField(blank=True, null=True)
+    stock = models.PositiveIntegerField()
     is_available = models.BooleanField(default=False)
 
     def __str__(self):
