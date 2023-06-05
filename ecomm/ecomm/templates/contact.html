@@ -1,0 +1,69 @@
+{% extends 'base.html' %} {% load crispy_forms_tags %} {% block content%}
+<!--Main layout-->
+<main class="mt-5">
+  <div class="container">
+    <!-- Heading -->
+    <h2 class="text-center">Kontak Kami</h2>
+    <h5 class="my-5 text-center">Silahkan tinggalkan pesan anda di kolom yang sudah disediakan</h5>
+    
+      <form method="POST" name="formContact">
+        {% csrf_token %}
+        <!--Grid row-->
+        <div class="row">
+
+          <!--Grid column-->
+          <div class="col-md-6 mb-4">
+            <!-- Heading -->
+              <img
+              src="https://img.freepik.com/free-vector/flat-design-illustration-customer-support_23-2148887720.jpg"
+              alt="Gambar" class="img-fluid"
+              > 
+          </div>
+
+          <!--Grid column-->
+          <div class="col-md-6 mb-4">
+              <!--Card-->
+              {% comment %} <div class="card p-4"> {% endcomment %}
+                  <!--Grid row-->
+                    <!--Nama-->
+                    <p class="mb-0">
+                        Nama
+                    </p>
+                    <div class="form-outline mb-4">
+                        {{ form.nama }}
+                    </div>
+
+                    <!--Email-->
+                    <p class="mb-0">
+                        Email
+                    </p>
+                    <div class="form-outline mb-4">
+                        {{ form.email }}
+                    </div>
+
+                    <!--Pesan-->
+                    <p class="mb-0">
+                      Pesan
+                    </p>
+                    <div class="form-outline mb-4">
+                      {{ form.pesan }}
+                    </div>
+
+                    <button class="btn btn-primary" type="submit" >Kirim</button>
+                    </>
+                  
+              </div>
+                <!--/.Card-->
+          </div> 
+          <!--Grid column-->
+        </div>
+        <!--Grid row-->
+    </form>
+</div>
+</main>
+<!--Main layout-->
+{%endblock content%}
+
+
+
+      
