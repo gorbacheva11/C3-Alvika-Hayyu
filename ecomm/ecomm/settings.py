@@ -138,6 +138,15 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_HOST_USER = 'witc3sore@gmail.com'
+EMAIL_HOST_PASSWORD = 'luryawhrzzmrfjcf'  
+EMAIL_USE_TLS = True
+EMAIL_USE_SSL = False
+
+
 PAYPAL_CLIENT_ID = env('PAYPAL_SANDBOX_CLIENT_ID')
 PAYPAL_SECRET_ID = env('PAYPAL_SANDBOX_SECRET_KEY')
 
