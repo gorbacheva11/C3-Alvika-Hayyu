@@ -22,3 +22,11 @@ class CheckoutForm(forms.Form):
     opsi_pembayaran = forms.ChoiceField(
         widget=forms.RadioSelect(), choices=PILIHAN_PEMBAYARAN)
 
+     
+class ContactForm(forms.Form):
+    nama = forms.CharField(widget=forms.TextInput(
+        attrs={'placeholder': 'Nama Anda', 'class': 'textinput form-control'}))
+    email = forms.EmailField(widget=forms.TextInput(
+        attrs={'placeholder': 'Email Anda', 'class': 'textinput form-control'}))
+    pesan = forms.CharField(widget=forms.Textarea(
+        attrs={'placeholder': 'Pesan Anda', 'class': 'textinput form-control'}))
