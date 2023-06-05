@@ -7,6 +7,7 @@ from django.shortcuts import get_object_or_404, redirect, render, reverse
 from django.utils import timezone
 from django.views import generic
 from django.views.decorators.http import require_POST
+from django.core.mail import send_mail
 from paypal.standard.forms import PayPalPaymentsForm
 from .forms import CheckoutForm
 from .models import ProdukItem, OrderProdukItem, Order, AlamatPengiriman, Payment
