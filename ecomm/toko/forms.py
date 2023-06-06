@@ -1,3 +1,5 @@
+from captcha.fields import CaptchaField
+from django.contrib.auth.forms import UserCreationForm
 from django import forms
 from django_countries.fields import CountryField
 from django_countries.widgets import CountrySelectWidget
@@ -21,8 +23,10 @@ class CheckoutForm(forms.Form):
         widget=forms.CheckboxInput(), required=False)
     opsi_pembayaran = forms.ChoiceField(
         widget=forms.RadioSelect(), choices=PILIHAN_PEMBAYARAN)
+    captcha = CaptchaField()
 
-     
+
+
 class ContactForm(forms.Form):
     nama = forms.CharField(widget=forms.TextInput(
         attrs={'placeholder': 'Nama Anda', 'class': 'textinput form-control'}))
@@ -30,3 +34,8 @@ class ContactForm(forms.Form):
         attrs={'placeholder': 'Email Anda', 'class': 'textinput form-control'}))
     pesan = forms.CharField(widget=forms.Textarea(
         attrs={'placeholder': 'Pesan Anda', 'class': 'textinput form-control'}))
+
+
+class CaptchaForm(UserCreationForm):
+    email = forms.EmailField(required=True)
+    captcha = CaptchaField()

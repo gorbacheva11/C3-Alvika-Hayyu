@@ -14,17 +14,26 @@
 
       <p>{% blocktrans %}Already have an account? Then please <a href="{{ login_url }}">sign in</a>.{% endblocktrans %}</p>
 
-      <form class="signup" id="signup_form" method="post" action="{% url 'account_signup' %}">
-        {% csrf_token %}
-        {{ form|crispy }}
-        {% if request.GET.next %}
-        <input type="hidden" name="next" id="next" value="{{ request.GET.next }}" />
-        {% endif %}
-        <button class="btn btn-primary" type="submit">{% trans "Sign Up" %} &raquo;</button>
-      </form>
-
+      {% autoescape off %}
+        <form class="signup" id="signup_form" method="post" action="{% url 'account_signup' %}">
+          {% csrf_token %}
+          {{ form|crispy }}
+          {% if request.GET.next %}
+          <input type="hidden" name="next" id="next" value="{{ request.GET.next }}" />
+          {% endif %}
+          <div class="col-lg-4 col-md-12 mb-4">
+            <p class="mb-0">
+              Kode captcha
+            </p>
+            <div class="form-outline">
+              {{ form.captcha }}
+            </div>
+          </div>
+          <button class="btn btn-primary" type="submit">{% trans "Sign Up" %} &raquo;</button>
+        </form>
+      {% endautoescape %}
     </div>
   </div>
 </main>
 
-{% endblock %}
+{% endblock content %}

@@ -1,17 +1,18 @@
+from captcha.fields import CaptchaField
 from django.conf import settings
 from django.contrib import messages
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import login_required, permission_required
+from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.exceptions import ObjectDoesNotExist
 from django.shortcuts import get_object_or_404, redirect, render, reverse
 from django.utils import timezone
 from django.views import generic
-from django.views.decorators.http import require_POST
 from django.core.mail import send_mail
 from paypal.standard.forms import PayPalPaymentsForm
-from .forms import CheckoutForm
+from .forms import CheckoutForm, ContactForm, CaptchaForm
 from .models import ProdukItem, OrderProdukItem, Order, AlamatPengiriman, Payment
-from django.views.decorators.csrf import csrf_protect, csrf_exempt
+from django.views.decorators.csrf import csrf_exempt
 
 
 class HomeListView(generic.ListView):
@@ -33,7 +34,7 @@ def __init__(self, request):
     self.basket = basket
 
 
-@require_POST
+"""@require_POST
 def add_quantity(request, slug):
     # adding and updating the users quantity to basket#
     cart = OrderProdukItem(request)
@@ -43,7 +44,7 @@ def add_quantity(request, slug):
         cd = form.cleaned_data
         cart.Order.objects.filter(user=request.user, produk_item=produk_item, quantity=cd['quantity'],
                                   override_quantity=cd['override'])
-    return redirect('toko:produk-detail', slug=slug)
+    return redirect('toko:produk-detail', slug=slug)"""
 
 
 class CheckoutView(LoginRequiredMixin, generic.FormView):
@@ -166,7 +167,6 @@ def add_to_cart(request, slug):
         order_query = Order.objects.filter(user=request.user, ordered=False)
         if order_query.exists():
             order = order_query[0]
-            #stock = request.GET.get('stock')
             if order.produk_items.filter(produk_item__slug=produk_item.slug).exists():
                 if produk_item.stock <= order_produk_item.quantity:
                     order_produk_item.save()
@@ -324,6 +324,7 @@ def search_produk(request):
     return render(request, 'search.html', context)
 
 
+@csrf_exempt
 def contact(request):
     if request.method == 'POST':
         form = ContactForm(request.POST)
@@ -350,3 +351,29 @@ def contact(request):
 
     return render(request, 'contact.html', {'form': form})
 
+
+"""def captcha_view(request):
+    if request.method == 'POST':
+        form_captcha = CaptchaForm(request.POST)
+
+        # validate the form: captcha field will automatically check the input
+        if form_captcha.is_valid():
+            messages.success(request, "Success!")
+    else:
+        messages.error(request, "Wrong Captcha!")
+        form_captcha = CaptchaForm()
+
+    return render(request, 'account/signup', {'form': form_captcha})"""
+
+
+def signup_view(request):
+    if request.method == 'POST':
+        form = CaptchaForm(request.POST)
+        if form.is_valid():
+            form.save()
+            # log the user in
+            return redirect('toko:home-produk-list')
+    else:
+        form = CaptchaForm()
+
+    return render(request, '/accounts/signup', {'form': form})

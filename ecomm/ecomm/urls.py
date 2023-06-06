@@ -24,6 +24,7 @@ urlpatterns = [
     path('accounts/', include('allauth.urls')),
     path('paypal/', include('paypal.standard.ipn.urls')),
     path('', include('toko.urls', namespace='toko')),
+    path('captcha/', include('captcha.urls')),
 ]
 
 if settings.DEBUG:

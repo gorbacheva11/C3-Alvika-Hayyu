@@ -37,6 +37,7 @@
       <a href="{{ signup_url }}">sign up</a> first.{% endblocktrans %}</p>
       {% endif %}
 
+      {% autoescape off %}
       <form class="login" method="POST" action="{% url 'account_login' %}">
         {% csrf_token %}
         {{ form|crispy }}
@@ -46,6 +47,7 @@
         <button class="btn btn-primary" type="submit">{% trans "Sign In" %}</button>
         <a class="btn btn-danger" href="{% url 'account_reset_password' %}">{% trans "Forgot Password?" %}</a>
       </form>
+      {% endautoescape %}
     </div>
   </div>
 </main>

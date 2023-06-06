@@ -1,4 +1,4 @@
-from django.conf import settings
+from django import forms
 from django.contrib.auth import get_user_model
 from django.db import models
 from django.urls import reverse
@@ -35,7 +35,7 @@ class ProdukItem(models.Model):
     gambar = models.ImageField(upload_to='product_pics')
     label = models.CharField(choices=PILIHAN_LABEL, max_length=4)
     kategori = models.CharField(choices=PILIHAN_KATEGORI, max_length=3)
-    stock = models.PositiveIntegerField()
+    stock = models.PositiveIntegerField(default=100)
     is_available = models.BooleanField(default=False)
 
     def __str__(self):

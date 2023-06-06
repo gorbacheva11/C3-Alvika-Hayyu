@@ -55,6 +55,8 @@ INSTALLED_APPS = [
     'crispy_bootstrap5',
 
     'paypal.standard.ipn',
+
+    'captcha'
 ]
 
 AUTHENTICATION_BACKENDS = [
@@ -220,3 +222,10 @@ if DEBUG is False:
     PAYPAL_SECRET_ID = env('PAYPAL_LIVE_SECRET_ID')
     PAYPAL_TEST = False
     PAYPAL_RECEIVER_EMAIL = env('PAYPAL_RECEIVER_EMAIL')
+
+    ACCOUNT_LOGIN_ATTEMPTS_LIMIT = 5
+    ACCOUNT_LOGIN_ATTEMPTS_TIMEOUT = 300
+
+    # Simple captcha setting
+    CAPTCHA_LENGTH = 4
+    CAPTCHA_FONT_SIZE = 30

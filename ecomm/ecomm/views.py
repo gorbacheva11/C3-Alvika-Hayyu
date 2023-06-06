@@ -1,10 +1,8 @@
-from django_ratelimit.decorators import ratelimit
-from django.views.decorators.csrf import csrf_protect, csrf_exempt
+from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth.forms import AuthenticationForm, UserCreationForm
 from django.shortcuts import redirect, render
 
 
-@ratelimit(key='user', rate='5/m')
 @csrf_exempt
 def login(request):
     if request.method == 'POST':
@@ -22,7 +20,7 @@ def login(request):
     return render(request, '/accounts/login', {'form': form, 'next': next_url})
 
 
-def signup_view(request):
+"""def signup_view(request):
     if request.method == 'POST':
         form = UserCreationForm(request.POST)
         if form.is_valid():
@@ -32,5 +30,4 @@ def signup_view(request):
     else:
         form = UserCreationForm()
 
-    form = UserCreationForm()
-    return render(request, '/accounts/signup', {'form': form})
+    return render(request, '/accounts/signup', {'form': form})"""

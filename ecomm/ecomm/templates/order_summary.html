@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div class="container" xmlns="http://www.w3.org/1999/html" xmlns="http://www.w3.org/1999/html">
+<div class="container">
     <div class="row">
         <div class="col-12 mt-4 mb-4">
             <h1 class="text-center">Order Summary</h1>
@@ -55,15 +55,15 @@
                         <div class="input-group-prepend">
                           <form method="POST" action="{% url 'toko:remove-single-item-from-cart' pItem.produk_item.slug %}">
                             {% csrf_token %}
-                              <button type="submit"  class="btn btn-success" fdprocessedid="q98am">-</button>
+                              <button type="submit"  class="col=2 btn btn-success text-center" fdprocessedid="q98am">-</button>
                           </form>
                         </div>
                         <div class="input-group-append">
                          <form method="POST" action="{% url 'toko:add-to-cart' pItem.produk_item.slug %}">
                             {% csrf_token %}
                             <input type="number" name="jumlah" value="{{ pItem.quantity }}" min="1" max="{{ pItem.produk_item.stock }}"
-                            class="form-control">
-                             <button type="submit" class="btn btn-success" fdprocessedid="q98am"
+                            class="col-4 text-center">
+                             <button type="submit" class="col-2 btn btn-success text-center" fdprocessedid="q98am"
                                 {% if pItem.produk_item.stock <= 1 %}disabled{% endif %}>+
                          </form>
                         </div>
