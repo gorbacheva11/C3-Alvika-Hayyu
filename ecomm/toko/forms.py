@@ -34,6 +34,7 @@ class ContactForm(forms.Form):
         attrs={'placeholder': 'Email Anda', 'class': 'textinput form-control'}))
     pesan = forms.CharField(widget=forms.Textarea(
         attrs={'placeholder': 'Pesan Anda', 'class': 'textinput form-control'}))
+    captcha = CaptchaField()
 
 
 class CaptchaForm(UserCreationForm):
