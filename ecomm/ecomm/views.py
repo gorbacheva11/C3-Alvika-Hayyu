@@ -1,5 +1,5 @@
 from django.views.decorators.csrf import csrf_exempt
-from django.contrib.auth.forms import AuthenticationForm, UserCreationForm
+from django.contrib.auth.forms import AuthenticationForm
 from django.shortcuts import redirect, render
 
 

@@ -7,7 +7,7 @@
     <div class="container">
         <!-- Heading -->
         <h2 class="my-5 text-center">Checkout</h2>
-
+        {% autoescape off %}
         <form method="POST" name="formCheckout">
             {% csrf_token %}
             <!--Grid row-->
@@ -117,6 +117,7 @@
                     </ul>
                     <!-- Cart -->
                 </div>
+                {% endautoescape %}
                 <!--Grid column-->
             </div>
             <!--Grid row-->

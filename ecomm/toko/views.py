@@ -1,8 +1,6 @@
-from captcha.fields import CaptchaField
 from django.conf import settings
 from django.contrib import messages
-from django.contrib.auth.decorators import login_required, permission_required
-from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.exceptions import ObjectDoesNotExist
 from django.shortcuts import get_object_or_404, redirect, render, reverse
@@ -10,8 +8,8 @@ from django.utils import timezone
 from django.views import generic
 from django.core.mail import send_mail
 from paypal.standard.forms import PayPalPaymentsForm
-from .forms import CheckoutForm, ContactForm, CaptchaForm
-from .models import ProdukItem, OrderProdukItem, Order, AlamatPengiriman, Payment
+from .forms import CheckoutForm, ContactForm, CaptchaForm, ReviewForm
+from .models import ProdukItem, OrderProdukItem, Order, AlamatPengiriman, Payment, ReviewRating
 from django.views.decorators.csrf import csrf_exempt
 
 
@@ -32,19 +30,6 @@ def __init__(self, request):
     if 'skey' not in request.session:
         basket = self.session['skey'] = {}
     self.basket = basket
-
-
-"""@require_POST
-def add_quantity(request, slug):
-    # adding and updating the users quantity to basket#
-    cart = OrderProdukItem(request)
-    produk_item = get_object_or_404(ProdukItem, slug=slug)
-    form = CartAddProductForm(request.POST)
-    if form.is_valid():
-        cd = form.cleaned_data
-        cart.Order.objects.filter(user=request.user, produk_item=produk_item, quantity=cd['quantity'],
-                                  override_quantity=cd['override'])
-    return redirect('toko:produk-detail', slug=slug)"""
 
 
 class CheckoutView(LoginRequiredMixin, generic.FormView):
@@ -352,20 +337,7 @@ def contact(request):
     return render(request, 'contact.html', {'form': form})
 
 
-"""def captcha_view(request):
-    if request.method == 'POST':
-        form_captcha = CaptchaForm(request.POST)
-
-        # validate the form: captcha field will automatically check the input
-        if form_captcha.is_valid():
-            messages.success(request, "Success!")
-    else:
-        messages.error(request, "Wrong Captcha!")
-        form_captcha = CaptchaForm()
-
-    return render(request, 'account/signup', {'form': form_captcha})"""
-
-
+@csrf_exempt
 def signup_view(request):
     if request.method == 'POST':
         form = CaptchaForm(request.POST)
@@ -377,3 +349,28 @@ def signup_view(request):
         form = CaptchaForm()
 
     return render(request, '/accounts/signup', {'form': form})
+
+
+@login_required()
+def submit_review(request, slug):
+    url = request.META.get('HTTP_REFERER')
+    if request.method == 'POST':
+        try:
+            reviews = ReviewRating.objects.get(user=request.user.id, produk_item__slug=produk_item.slug)
+            form = ReviewForm(request.POST, instance=reviews)
+            form.save()
+            messages.success(request, 'Thank you! Your review has been updated.')
+            return redirect(url)
+        except ReviewRating.DoesNotExist:
+            form = ReviewForm(request.POST)
+            if form.is_valid():
+                data = ReviewRating()
+                data.subject = form.cleaned_data['subject']
+                data.rating = form.cleaned_data['rating']
+                data.review = form.cleaned_data['review']
+                data.ip = request.META.get('REMOTE_ADDR')
+                data.slug = slug
+                data.user = request.user.id
+                data.save()
+                messages.success(request, 'Thank you! Your review has been submitted.')
+                return redirect(url)

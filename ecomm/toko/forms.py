@@ -3,6 +3,7 @@ from django.contrib.auth.forms import UserCreationForm
 from django import forms
 from django_countries.fields import CountryField
 from django_countries.widgets import CountrySelectWidget
+from .models import ReviewRating
 
 PILIHAN_PEMBAYARAN = (
     ('P', 'Paypal'),
@@ -40,3 +41,9 @@ class ContactForm(forms.Form):
 class CaptchaForm(UserCreationForm):
     email = forms.EmailField(required=True)
     captcha = CaptchaField()
+
+
+class ReviewForm(forms.Form):
+    class Meta:
+        model = ReviewRating
+        fields = ['subject', 'review', 'rating']
